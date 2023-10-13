@@ -1,4 +1,4 @@
-Certainly! Here's the content I provided earlier formatted as a `README.md` for your CloudWatch Metric Alarm Terraform module:
+
 
 ```markdown
 # Terraform AWS CloudWatch Metric Alarm Module
@@ -34,6 +34,26 @@ module "cloudwatch-metric-alarm" {
 }
 ```
 
+```hcl
+module "cloudwatch-metric-alarm" {
+  source            = "path/to/module"
+  alarm_name        = "ExampleAlarm"
+  comparison_operator = "GreaterThanOrEqualToThreshold"
+  evaluation_periods = 2
+  metric_name       = "CPUUtilization"
+  namespace         = "AWS/EC2"
+  period            = 300
+  statistic         = "Average"
+  threshold         = 90
+  alarm_description = "This is an example CloudWatch Metric Alarm."
+  alarm_actions     = ["arn:aws:sns:us-west-2:123456789012:ExampleTopic"]
+  dimensions        = {
+    InstanceId = "i-0123456789abcdef0"
+  }
+}
+
+```
+
 For detailed information on each input parameter, refer to the [Inputs](#inputs) section below.
 
 ## Dependencies
@@ -43,6 +63,11 @@ Before using this module, ensure you have the following dependencies in place:
 - An AWS account with configured AWS CLI or AWS credentials.
 - Terraform installed.
 
+## Resources
+
+| Name | Type |
+|------|------|
+| [aws_cloudwatch_metric_alarm](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/cloudwatch_metric_alarm) | resource |
 ## Inputs
 
 This module accepts the following input parameters:
@@ -75,16 +100,5 @@ This module provides the following outputs:
 
 This module does not depend on any other modules.
 
-## Notes
-
-- Customize the inputs according to your specific use case.
-- Ensure you have the necessary IAM permissions to create CloudWatch Metric Alarms.
-
-Feel free to contribute, report issues, or request new features through the module's [GitHub repository](https://github.com/your-module-repo).
-
-## License
-
-This module is available under the [MIT License](LICENSE.md).
-```
 
 You can use this code as your `README.md` for the CloudWatch Metric Alarm Terraform module, replacing "path/to/module" with the actual path or URL to your module source.
