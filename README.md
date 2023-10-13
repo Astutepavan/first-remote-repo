@@ -1,6 +1,6 @@
 
 
-```markdown
+
 # Terraform AWS CloudWatch Metric Alarm Module
 
 ## Overview
@@ -15,24 +15,7 @@ This module creates a `aws_cloudwatch_metric_alarm` resource that allows you to 
 
 You can utilize this module by including it in your Terraform configuration. Below is an example of how to use the module:
 
-```hcl
-module "cloudwatch-metric-alarm" {
-  source            = "path/to/module"
-  alarm_name        = "ExampleAlarm"
-  comparison_operator = "GreaterThanOrEqualToThreshold"
-  evaluation_periods = 2
-  metric_name       = "CPUUtilization"
-  namespace         = "AWS/EC2"
-  period            = 300
-  statistic         = "Average"
-  threshold         = 90
-  alarm_description = "This is an example CloudWatch Metric Alarm."
-  alarm_actions     = ["arn:aws:sns:us-west-2:123456789012:ExampleTopic"]
-  dimensions        = {
-    InstanceId = "i-0123456789abcdef0"
-  }
-}
-```
+
 
 ```hcl
 module "cloudwatch-metric-alarm" {
