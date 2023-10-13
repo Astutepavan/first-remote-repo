@@ -1,116 +1,90 @@
-<!-- BEGIN_TF_DOCS -->
-## Terraform-AWS-route53-record-set
-Terraform AWS Route53 Record Module
-This Terraform code provides the ability to create Route 53 records within a given hosted zone in AWS.
+Certainly! Here's the content I provided earlier formatted as a `README.md` for your CloudWatch Metric Alarm Terraform module:
+
+```markdown
+# Terraform AWS CloudWatch Metric Alarm Module
+
+## Overview
+
+This Terraform module simplifies the creation of CloudWatch Metric Alarms in your AWS environment. CloudWatch Metric Alarms are essential for monitoring various AWS resources and triggering actions based on predefined thresholds.
 
 ## Resources
-aws_route53_record.app
-This resource creates DNS records in AWS Route 53 based on the subdomain_records input variable. The for_each construct allows for creating multiple DNS records as defined by the map of subdomain_records.
 
-## Attributes:
-zone_id: The ID of the hosted zone where the record should be created.
-name: The name of the record.
-type: The record type (A, CNAME, etc.).
-ttl: The Time To Live (TTL) of the record.
-records: A list of record values (e.g., IP addresses or domain names).
-module "subdomain-records"
-This module manages the creation of multiple subdomain records. The actual implementation of the module is abstracted (presumably located in a different directory or source).
-subdomain: Defines the primary subdomain name.
-subdomain_records: A map defining each subdomain's name, type, TTL, and record values.
-zone_id: The ID of the hosted zone.
-depends_on: Ensures that the specified resource (in this case, aws_route53_zone.appsubdomain) is created before this module is executed.
+This module creates a `aws_cloudwatch_metric_alarm` resource that allows you to define and configure CloudWatch Metric Alarms.
 
-## Example Usage
-The provided code includes an example of how to use the subdomain-records module:
+## Usage
 
-```
-## This will create Private Record Set
+You can utilize this module by including it in your Terraform configuration. Below is an example of how to use the module:
 
-module "private_hosted_zone_subdomain-records" {
-  source    = "../../"
-  subdomain = "dev.012345.private.jlldrs.net"
-  create_private_hosted_zone_record_set = true
-  subdomain_records = {
-    "test000.dev.012345.private.jlldrs.net" = {
-      type    = "A"
-      ttl     = "30"
-      records = ["5.4.3.2"]
-    },
-    "aliastest111.dev.012345.private.jlldrs.net" = {
-      type    = "CNAME"
-      ttl     = "30"
-      records = ["test000.dev.012345.private.jlldrs.net"]
-    }
+```hcl
+module "cloudwatch-metric-alarm" {
+  source            = "path/to/module"
+  alarm_name        = "ExampleAlarm"
+  comparison_operator = "GreaterThanOrEqualToThreshold"
+  evaluation_periods = 2
+  metric_name       = "CPUUtilization"
+  namespace         = "AWS/EC2"
+  period            = 300
+  statistic         = "Average"
+  threshold         = 90
+  alarm_description = "This is an example CloudWatch Metric Alarm."
+  alarm_actions     = ["arn:aws:sns:us-west-2:123456789012:ExampleTopic"]
+  dimensions        = {
+    InstanceId = "i-0123456789abcdef0"
   }
 }
-
-## This will create Public Record Set
-
-module "public_hosted_zone_subdomain-records" {
-  source    = "../../"
-  subdomain = "dev6.a00003261.public.jlldrs.net"
-  subdomain_records = {
-    "test333.dev6.a00003261.public.jlldrs.net" = {
-      type    = "A"
-      ttl     = "30"
-      records = ["5.4.3.2"]
-    },
-    "aliastest444.dev6.a00003261.public.jlldrs.net" = {
-      type    = "CNAME"
-      ttl     = "30"
-      records = ["test333.dev6.a00003261.public.jlldrs.net"]
-    }
-  }
-}
-
 ```
 
+For detailed information on each input parameter, refer to the [Inputs](#inputs) section below.
 
 ## Dependencies
-An AWS account and configured AWS CLI or AWS credentials.
-Terraform installed.
-Existing Route 53 hosted zone (data.aws_route53_zone.appsubdomain refers to a data source that fetches information about a pre-existing hosted zone).
 
-## Notes
-The commented out depends_on within the aws_route53_record.app resource suggests there may have been a circular dependency or some order of creation issues in past iterations. Review and confirm whether it's necessary based on the overall infrastructure setup.
-The actual module code for subdomain-records is abstracted in the given code, so ensure that the module's source path is correctly defined and available when using this code in practice.
+Before using this module, ensure you have the following dependencies in place:
 
-## Requirements
-
-| Name | Version |
-|------|---------|
-| <a name="requirement_terraform"></a> [terraform](#requirement\_terraform) | >= 0.15 |
-| <a name="requirement_aws"></a> [aws](#requirement\_aws) | ~> 4.0 |
-
-## Providers
-
-| Name | Version |
-|------|---------|
-| <a name="provider_aws"></a> [aws](#provider\_aws) | ~> 4.0 |
-
-## Modules
-
-No modules.
-
-## Resources
-
-| Name | Type |
-|------|------|
-| [aws_route53_record.app](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/route53_record) | resource |
-| [aws_route53_zone.appsubdomain](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/data-sources/route53_zone) | data source |
+- An AWS account with configured AWS CLI or AWS credentials.
+- Terraform installed.
 
 ## Inputs
 
-| Name | Description | Type | Default | Required |
-|------|-------------|------|---------|:--------:|
-| <a name="input_create_private_hosted_zone_record_set"></a> [create\_private\_hosted\_zone\_record\_set](#input\_create\_private\_hosted\_zone\_record\_set) | Whether Route53 zone is private | `bool` | `false` | no |
-| <a name="input_subdomain"></a> [subdomain](#input\_subdomain) | Name of <env>-<appid>-private.jlldrs.net | `string` | n/a | yes |
-| <a name="input_subdomain_records"></a> [subdomain\_records](#input\_subdomain\_records) | Map of DNS records to add to zone | `map(any)` | n/a | yes |
+This module accepts the following input parameters:
+
+| Name                  | Description                                      | Type   | Default | Required |
+|-----------------------|--------------------------------------------------|--------|---------|:--------:|
+| `alarm_name`          | The name for the alarm.                         | string | n/a     | yes      |
+| `comparison_operator` | The arithmetic operation to use for comparison. | string | n/a     | yes      |
+| `evaluation_periods`  | The number of periods over which data is compared. | number | n/a     | yes   |
+| `metric_name`         | The name of the CloudWatch metric.             | string | n/a     | yes      |
+| `namespace`           | The namespace of the metric.                   | string | n/a     | yes      |
+| `period`              | The length, in seconds, of each evaluation period. | number | n/a | yes |
+| `statistic`           | The statistic to apply to the alarm's associated metric. | string | n/a | yes |
+| `threshold`           | The value against which the specified statistic is compared. | number | n/a | yes |
+| `alarm_description`    | The description for the alarm.                   | string | ""    | no       |
+| `alarm_actions`       | The list of ARNs for actions to take when the alarm is triggered. | list(string) | [] | no |
+| `dimensions`          | A map of dimensions for the metric.              | map(string) | {} | no |
 
 ## Outputs
 
-| Name | Description |
-|------|-------------|
-| <a name="output_route53_record_fqdn"></a> [route53\_record\_fqdn](#output\_route53\_record\_fqdn) | FQDN built using the zone domain and name |
-| <a name="output_route53_record_name"></a> [route53\_record\_name](#output\_route53\_record\_name) | The name of the record |
-<!-- END_TF_DOCS -->
+This module provides the following outputs:
+
+| Name          | Description                                      |
+|---------------|--------------------------------------------------|
+| `alarm_arn`   | The Amazon Resource Name (ARN) of the alarm.     |
+| `alarm_id`    | The ID of the alarm.                             |
+| `alarm_name`  | The name of the alarm.                           |
+
+## Module Dependencies
+
+This module does not depend on any other modules.
+
+## Notes
+
+- Customize the inputs according to your specific use case.
+- Ensure you have the necessary IAM permissions to create CloudWatch Metric Alarms.
+
+Feel free to contribute, report issues, or request new features through the module's [GitHub repository](https://github.com/your-module-repo).
+
+## License
+
+This module is available under the [MIT License](LICENSE.md).
+```
+
+You can use this code as your `README.md` for the CloudWatch Metric Alarm Terraform module, replacing "path/to/module" with the actual path or URL to your module source.
